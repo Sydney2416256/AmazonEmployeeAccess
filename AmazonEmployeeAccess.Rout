@@ -1,0 +1,125 @@
+
+R version 4.3.3 (2024-02-29) -- "Angel Food Cake"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # Load in Libraries
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> library(vroom)
+
+Attaching package: ‘vroom’
+
+The following objects are masked from ‘package:readr’:
+
+    as.col_spec, col_character, col_date, col_datetime, col_double,
+    col_factor, col_guess, col_integer, col_logical, col_number,
+    col_skip, col_time, cols, cols_condense, cols_only, date_names,
+    date_names_lang, date_names_langs, default_locale, fwf_cols,
+    fwf_empty, fwf_positions, fwf_widths, locale, output_column,
+    problems, spec
+
+> library(embed)
+Loading required package: recipes
+
+Attaching package: ‘recipes’
+
+The following object is masked from ‘package:stringr’:
+
+    fixed
+
+The following object is masked from ‘package:stats’:
+
+    step
+
+> 
+> 
+> 
+> # Load in Data
+> data <- vroom("train.csv") 
+Rows: 32769 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): ACTION, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTN...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> testdata <- vroom("test.csv") 
+Rows: 58921 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+dbl (10): id, RESOURCE, MGR_ID, ROLE_ROLLUP_1, ROLE_ROLLUP_2, ROLE_DEPTNAME,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+> 
+> data$ACTION = as.factor(data$ACTION)
+> 
+> 
+> 
+> 
+> 
+> my_recipe <- recipe(ACTION ~. , data=data) %>%
++   
++   step_mutate_at(all_numeric_predictors(), fn = factor) %>% 
++   step_other(all_predictors(), threshold = .001) |> 
++   step_dummy(all_nominal_predictors()) 
+>   # step_lencode_glm(vars_I_want_to_target_encode, outcome = vars(target_var)) |> 
+>   
+>   
+>   
+> 
+> 
+> prepped_recipe <- prep(my_recipe) # Sets up the preprocessing using myDataSet
+> bake(prepped_recipe, new_data=testdata)
+# A tibble: 58,921 × 1,049
+   RESOURCE_X917 RESOURCE_X971 RESOURCE_X972 RESOURCE_X1020 RESOURCE_X1937
+           <dbl>         <dbl>         <dbl>          <dbl>          <dbl>
+ 1             0             0             0              0              0
+ 2             0             0             0              0              0
+ 3             0             0             0              0              0
+ 4             0             0             0              0              0
+ 5             0             0             0              0              0
+ 6             0             0             0              0              0
+ 7             0             0             0              0              0
+ 8             0             0             0              0              0
+ 9             0             0             0              0              0
+10             0             0             0              0              0
+# ℹ 58,911 more rows
+# ℹ 1,044 more variables: RESOURCE_X1969 <dbl>, RESOURCE_X3130 <dbl>,
+#   RESOURCE_X3264 <dbl>, RESOURCE_X3853 <dbl>, RESOURCE_X4675 <dbl>,
+#   RESOURCE_X5112 <dbl>, RESOURCE_X5173 <dbl>, RESOURCE_X6977 <dbl>,
+#   RESOURCE_X7543 <dbl>, RESOURCE_X7678 <dbl>, RESOURCE_X13878 <dbl>,
+#   RESOURCE_X14354 <dbl>, RESOURCE_X14570 <dbl>, RESOURCE_X15022 <dbl>,
+#   RESOURCE_X15064 <dbl>, RESOURCE_X15369 <dbl>, RESOURCE_X15714 <dbl>, …
+> 
+> 
+> 
+> log_reg_mod <- logistic_reg() %>% #Type of model
++   set_engine("glm")
+Error in set_engine(., "glm") : could not find function "set_engine"
+Calls: %>%
+Execution halted
